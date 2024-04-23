@@ -1,11 +1,10 @@
-"use client";
+"use client"
 import React, { useEffect, useRef, useState } from "react";
 import styles from "./style.module.css";
 import { gsap } from "gsap";
-import Splitting from "splitting";
+// import Splitting from "splitting";
 import Lenis from "@studio-freight/lenis";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-gsap.registerPlugin(ScrollTrigger);
 
 export default function Page() {
   const heroParagraphRef = useRef(null);
@@ -46,39 +45,50 @@ export default function Page() {
     };
 
     if (typeof window !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
       initLenis();
+
+      // Dynamically import Splitting only in the browser environment
+      import("splitting").then((Splitting) => {
+        if (heroParagraphRef.current) {
+          Splitting.default({ target: heroParagraphRef.current, by: "words" });
+        }
+      });
     }
   }, []);
 
+  // useEffect(() => {
+  //   if(typeof window !== "undefined") {
+
+  //     if (heroParagraphRef.current) {
+  //       Splitting({ target: heroParagraphRef.current, by: "words" });
+  //     }
+  //   }
+  // }, []);
+
   useEffect(() => {
-    if (heroParagraphRef.current) {
-      Splitting({ target: heroParagraphRef.current, by: "words" });
+    if (typeof document !== "undefined") {
+      gsap.set(heroBackgroundRef.current, { autoAlpha: 1 });
+
+      ScrollTrigger.create({
+        trigger: heroParagraphRef.current,
+        start: "top top",
+        end: "bottom bottom",
+        onEnter: () => {
+          gsap.to(heroBackgroundRef.current, { autoAlpha: 0 });
+          setImageVisible(false);
+        },
+        onLeaveBack: () => {
+          gsap.to(heroBackgroundRef.current, { autoAlpha: 1 });
+          setImageVisible(true);
+        },
+        onUpdate: (self) => {
+          gsap.to(heroBackgroundRef.current, {
+            scale: self.direction === -1 ? 1.2 : 1,
+          });
+        },
+      });
     }
-  }, []);
-
-  useEffect(() => {
-    // Set initial state of background visibility
-    gsap.set(heroBackgroundRef.current, { autoAlpha: 1 });
-
-    // Toggle background visibility on scroll
-    ScrollTrigger.create({
-      trigger: heroParagraphRef.current,
-      start: "top top",
-      end: "bottom bottom",
-      onEnter: () => {
-        gsap.to(heroBackgroundRef.current, { autoAlpha: 0 });
-        setImageVisible(false);
-      },
-      onLeaveBack: () => {
-        gsap.to(heroBackgroundRef.current, { autoAlpha: 1 });
-        setImageVisible(true);
-      },
-      onUpdate: (self) => {
-        gsap.to(heroBackgroundRef.current, {
-          scale: self.direction === -1 ? 1.2 : 1,
-        });
-      },
-    });
   }, []);
 
   return (
