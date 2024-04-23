@@ -6,34 +6,39 @@ import Link from "next/link";
 
 export default function HomeBanner() {
   useEffect(() => {
+    
     const startLoader = () => {
-      let counterElement = document.querySelector(".count p");
-      let currentValue = 0;
+      if (typeof window !== 'undefined') {
+        let counterElement = document.querySelector(".count p");
+        let currentValue = 0;
 
-      const updateCounter = () => {
-        if (currentValue < 100) {
-          let increment = Math.floor(Math.random() * 10) + 1;
-          currentValue = Math.min(currentValue + increment, 100);
-          counterElement.textContent = currentValue;
+        const updateCounter = () => {
+          if (currentValue < 100) {
+            let increment = Math.floor(Math.random() * 10) + 1;
+            currentValue = Math.min(currentValue + increment, 100);
+            counterElement.textContent = currentValue;
 
-          let delay = Math.floor(Math.random() * 200) + 25;
-          setTimeout(updateCounter, delay);
-        }
-      };
+            let delay = Math.floor(Math.random() * 200) + 25;
+            setTimeout(updateCounter, delay);
+          }
+        };
 
-      updateCounter();
+        updateCounter();
+      }
     };
 
     startLoader();
 
     gsap.to(".count", { opacity: 0, delay: 3.5, duration: 0.5 });
 
-    let textWrapper = document.querySelector(".ml16");
-
-    textWrapper.innerHTML = textWrapper.textContent.replace(
-      /\S/g,
-      "<span class='letter'>$&</span>"
-    );
+    if (typeof window !== 'undefined') {
+      let textWrapper = document.querySelector(".ml16");
+      
+      textWrapper.innerHTML = textWrapper.textContent.replace(
+        /\S/g,
+        "<span class='letter'>$&</span>"
+      );
+    }
 
     anime
       .timeline({ loop: false })
